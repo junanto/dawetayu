@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Pembelajaran Interaktif - Banjarnegara & Pertanian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f0fdf4;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka', cursive;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- Header -->
+    <header class="bg-emerald-600 text-white py-6 px-4 shadow-lg text-center relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <h1 class="text-3xl md:text-4xl font-bold tracking-wide">Kuis Pembelajaran Interaktif</h1>
+            <p class="text-emerald-100 text-sm md:text-base mt-1">Mengenal Pertanian & Kuliner Khas Banjarnegara</p>
+        </div>
+        <div class="absolute -bottom-6 -left-6 w-24 h-24 bg-emerald-500 rounded-full opacity-50"></div>
+        <div class="absolute -top-6 -right-6 w-24 h-24 bg-emerald-700 rounded-full opacity-50"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto w-full p-4 md:p-6 flex-grow">
+
+        <!-- Form Nama Student (Awal) -->
+        <div id="welcome-card" class="bg-white rounded-2xl shadow-xl p-6 md:p-8 border-2 border-emerald-100 text-center">
+            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-emerald-800 mb-2">Selamat Datang di Kuis!</h2>
+            <p class="text-slate-600 mb-6">Terdapat 20 soal (Pilihan Ganda, Benar/Salah, dan Isian Singkat). Tuliskan namamu sebelum memulai.</p>
+            
+            <form id="start-form" onsubmit="startQuiz(event)" class="max-w-sm mx-auto space-y-4">
+                <div>
+                    <input type="text" id="student-name" required placeholder="Masukkan Nama Lengkap" 
+                        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 focus:outline-none transition-colors text-center font-semibold text-lg">
+                </div>
+                <button type="submit" 
+                    class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl shadow-md transform hover:-translate-y-0.5 transition-all text-lg">
+                    Mulai Kuis <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Quiz Form Container -->
+        <form id="quiz-form" onsubmit="submitQuiz(event)" class="hidden space-y-8">
+
+            <!-- Section 1: Pilihan Ganda -->
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-emerald-100 space-y-6">
+                <div class="flex items-center space-x-3 border-b pb-3 border-emerald-100">
+                    <span class="bg-emerald-100 text-emerald-700 p-2 rounded-lg"><i class="fa-solid fa-list-check text-xl"></i></span>
+                    <div>
+                        <h2 class="text-xl font-bold text-emerald-900">Bagian 1: Pilihan Ganda</h2>
+                        <p class="text-xs text-slate-500">Pilihlah salah satu jawaban yang paling tepat!</p>
+                    </div>
+                </div>
+
+                <!-- Soal PG 1-8 -->
+                <div id="pg-container" class="space-y-6"></div>
+            </div>
+
+            <!-- Section 2: Benar atau Salah -->
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-emerald-100 space-y-6">
+                <div class="flex items-center space-x-3 border-b pb-3 border-emerald-100">
+                    <span class="bg-blue-100 text-blue-700 p-2 rounded-lg"><i class="fa-solid fa-circle-check text-xl"></i></span>
+                    <div>
+                        <h2 class="text-xl font-bold text-blue-900">Bagian 2: Benar atau Salah</h2>
+                        <p class="text-xs text-slate-500">Tentukan apakah pernyataan berikut Benar atau Salah!</p>
+                    </div>
+                </div>
+
+                <!-- Soal BS 9-14 -->
+                <div id="bs-container" class="space-y-6"></div>
+            </div>
+
+            <!-- Section 3: Isian Singkat -->
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-emerald-100 space-y-6">
+                <div class="flex items-center space-x-3 border-b pb-3 border-emerald-100">
+                    <span class="bg-amber-100 text-amber-700 p-2 rounded-lg"><i class="fa-solid fa-pen-to-square text-xl"></i></span>
+                    <div>
+                        <h2 class="text-xl font-bold text-amber-900">Bagian 3: Isian Singkat</h2>
+                        <p class="text-xs text-slate-500">Isilah titik-titik di bawah ini dengan jawaban yang tepat!</p>
+                    </div>
+                </div>
+
+                <!-- Soal Isian 15-20 -->
+                <div id="isian-container" class="space-y-6"></div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center pt-4">
+                <button type="submit" 
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-10 rounded-2xl shadow-xl transform hover:-translate-y-1 transition-all text-xl w-full md:w-auto">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Jawaban
+                </button>
+            </div>
+        </form>
+
+        <!-- Result Screen -->
+        <div id="result-card" class="hidden bg-white rounded-2xl shadow-xl p-6 md:p-8 border-2 border-emerald-100 text-center space-y-6">
+            <div class="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-4xl">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            
+            <div>
+                <h2 class="text-3xl font-bold text-slate-800">Hasil Kuis</h2>
+                <p id="result-student-name" class="text-lg font-semibold text-emerald-700 mt-1"></p>
+            </div>
+
+            <div class="bg-emerald-50 rounded-2xl p-6 max-w-sm mx-auto border border-emerald-200">
+                <div class="text-sm font-semibold text-emerald-800 uppercase tracking-wider">Nilai Akhir</div>
+                <div id="final-score" class="text-6xl font-black text-emerald-600 my-2">0</div>
+                <div id="score-details" class="text-sm text-slate-600">Menjawab <span id="correct-count">0</span> dari 20 soal dengan benar.</div>
+            </div>
+
+            <div id="feedback-message" class="text-lg font-semibold text-slate-700"></div>
+
+            <div class="pt-4 flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="restartQuiz()" 
+                    class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-xl transition-colors">
+                    <i class="fa-solid fa-rotate-left mr-2"></i> Coba Lagi
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-100 border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        &copy; Kuis Pembelajaran Interaktif - Banjarnegara
+    </footer>
+
+    <script>
+        // Data Soal & Kunci Jawaban
+        const quizData = {
+            pg: [
+                { id: 1, q: "Tempat untuk menanam berbagai jenis tanaman disebut ….", options: ["Sawah", "Kebun", "Pasar"], ans: "Kebun" },
+                { id: 2, q: "Tanaman yang biasanya ditanam di sawah adalah ….", options: ["Padi", "Salak", "Carica"], ans: "Padi" },
+                { id: 3, q: "Setelah padi menguning, padi siap ….", options: ["Dimasak", "Dipanen", "Ditanam"], ans: "Dipanen" },
+                { id: 4, q: "Padi yang sudah digiling akan menjadi ….", options: ["Gula", "Tepung", "Beras"], ans: "Beras" },
+                { id: 5, q: "Salah satu buah khas Banjarnegara adalah ….", options: ["Apel", "Salak pondoh", "Mangga"], ans: "Salak pondoh" },
+                { id: 6, q: "Bahan yang digunakan untuk meracik Dawet Ayu adalah ….", options: ["Cendol, santan, juruh, dan es batu", "Padi, beras, dan garam", "Tepung, telur, dan minyak"], ans: "Cendol, santan, juruh, dan es batu" },
+                { id: 7, q: "Alat yang digunakan sebagai wadah untuk meracik Dawet Ayu adalah ….", options: ["Gelas", "Pisau", "Sapu"], ans: "Gelas" },
+                { id: 8, q: "Kendil untuk Dawet Ayu terbuat dari ….", options: ["Kaca", "Tanah liat", "Kertas"], ans: "Tanah liat" }
+            ],
+            bs: [
+                { id: 9, q: "Sawah biasanya tergenang air.", ans: "Benar" },
+                { id: 10, q: "Kebun selalu tergenang air seperti sawah.", ans: "Salah" },
+                { id: 11, q: "Sendok digunakan untuk mengaduk Dawet Ayu di dalam gelas.", ans: "Benar" },
+                { id: 12, q: "Sendok dapat dibuat dari aluminium.", ans: "Benar" },
+                { id: 13, q: "Ember dapat digunakan untuk tempat cendol dan santan.", ans: "Benar" },
+                { id: 14, q: "Sarangan digunakan untuk menyaring.", ans: "Benar" }
+            ],
+            isian: [
+                { id: 15, q: "Buah khas Banjarnegara selain salak pondoh adalah __________.", type: "single", ans: ["carica"] },
+                { id: 16, q: "Alat untuk menyaring disebut __________.", type: "single", ans: ["sarangan"] },
+                { id: 17, q: "Kendil digunakan sebagai tempat __________.", type: "single", ans: ["juruh"] },
+                { id: 18, q: "Ember digunakan untuk tempat __________ dan __________.", type: "double", ans: [["cendol", "santan"], ["santan", "cendol"]] },
+                { id: 19, q: "Tuliskan dua alat yang digunakan untuk berjualan Dawet Ayu!", type: "double_flexible", valid: ["sendok", "gelas", "kendil", "ember"] },
+                { id: 20, q: "Sebutkan dua bahan untuk meracik Dawet Ayu!", type: "double_flexible", valid: ["cendol", "santan", "juruh", "es batu"] }
+            ]
+        };
+
+        let currentStudent = "";
+
+        // Inisialisasi Render Soal
+        function initQuiz() {
+            const pgContainer = document.getElementById('pg-container');
+            pgContainer.innerHTML = quizData.pg.map(item => `
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-800 mb-3">${item.id}. ${item.q}</p>
+                    <div class="space-y-2">
+                        ${item.options.map(opt => `
+                            <label class="flex items-center p-3 bg-white rounded-lg border border-slate-200 hover:bg-emerald-50 cursor-pointer transition-colors">
+                                <input type="radio" name="q_${item.id}" value="${opt}" required class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                                <span class="ml-3 font-medium text-slate-700">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            const bsContainer = document.getElementById('bs-container');
+            bsContainer.innerHTML = quizData.bs.map(item => `
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <p class="font-bold text-slate-800 mb-3">${item.id}. ${item.q}</p>
+                    <div class="flex space-x-4">
+                        <label class="flex-1 flex items-center justify-center p-3 bg-white rounded-lg border border-slate-200 hover:bg-emerald-50 cursor-pointer transition-colors">
+                            <input type="radio" name="q_${item.id}" value="Benar" required class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                            <span class="ml-2 font-semibold text-slate-700">Benar</span>
+                        </label>
+                        <label class="flex-1 flex items-center justify-center p-3 bg-white rounded-lg border border-slate-200 hover:bg-rose-50 cursor-pointer transition-colors">
+                            <input type="radio" name="q_${item.id}" value="Salah" required class="w-4 h-4 text-rose-600 focus:ring-rose-500">
+                            <span class="ml-2 font-semibold text-slate-700">Salah</span>
+                        </label>
+                    </div>
+                </div>
+            `).join('');
+
+            const isianContainer = document.getElementById('isian-container');
+            isianContainer.innerHTML = quizData.isian.map(item => {
+                let inputHtml = "";
+                if(item.type === "single") {
+                    inputHtml = `<input type="text" name="q_${item.id}" required placeholder="Ketik jawabanmu..." class="w-full px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none">`;
+                } else {
+                    inputHtml = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input type="text" name="q_${item.id}_1" required placeholder="Jawaban 1" class="px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none">
+                            <input type="text" name="q_${item.id}_2" required placeholder="Jawaban 2" class="px-4 py-2 border rounded-lg focus:border-amber-500 focus:outline-none">
+                        </div>
+                    `;
+                }
+                return `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <p class="font-bold text-slate-800 mb-3">${item.id}. ${item.q}</p>
+                        ${inputHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startQuiz(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('student-name');
+            if (nameInput.value.trim() === "") return;
+            
+            currentStudent = nameInput.value.trim();
+            document.getElementById('welcome-card').classList.add('hidden');
+            document.getElementById('quiz-form').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function submitQuiz(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            let correctCount = 0;
+
+            // Cek PG
+            quizData.pg.forEach(item => {
+                const userAns = formData.get(`q_${item.id}`);
+                if (userAns === item.ans) correctCount++;
+            });
+
+            // Cek Benar/Salah
+            quizData.bs.forEach(item => {
+                const userAns = formData.get(`q_${item.id}`);
+                if (userAns === item.ans) correctCount++;
+            });
+
+            // Cek Isian Singkat
+            quizData.isian.forEach(item => {
+                if (item.type === "single") {
+                    const userAns = (formData.get(`q_${item.id}`) || "").trim().toLowerCase();
+                    if (item.ans.includes(userAns)) correctCount++;
+                } else if (item.type === "double") {
+                    const ans1 = (formData.get(`q_${item.id}_1`) || "").trim().toLowerCase();
+                    const ans2 = (formData.get(`q_${item.id}_2`) || "").trim().toLowerCase();
+                    const isMatch = item.ans.some(pair => pair[0] === ans1 && pair[1] === ans2);
+                    if (isMatch) correctCount++;
+                } else if (item.type === "double_flexible") {
+                    const ans1 = (formData.get(`q_${item.id}_1`) || "").trim().toLowerCase();
+                    const ans2 = (formData.get(`q_${item.id}_2`) || "").trim().toLowerCase();
+                    if (ans1 !== ans2 && item.valid.includes(ans1) && item.valid.includes(ans2)) {
+                        correctCount++;
+                    }
+                }
+            });
+
+            // Hitung Nilai Akhir (Skala 100)
+            const finalScore = Math.round((correctCount / 20) * 100);
+
+            // Tampilkan Hasil
+            document.getElementById('quiz-form').classList.add('hidden');
+            document.getElementById('result-card').classList.remove('hidden');
+            document.getElementById('result-student-name').innerText = `Nama: ${currentStudent}`;
+            document.getElementById('final-score').innerText = finalScore;
+            document.getElementById('correct-count').innerText = correctCount;
+
+            const feedback = document.getElementById('feedback-message');
+            if (finalScore === 100) {
+                feedback.innerText = "Sempurna! Kamu hebat sekali! 🌟";
+                feedback.className = "text-lg font-semibold text-emerald-600";
+            } else if (finalScore >= 75) {
+                feedback.innerText = "Bagus sekali! Hasil kerjamu sangat memuaskan! 👍";
+                feedback.className = "text-lg font-semibold text-blue-600";
+            } else {
+                feedback.innerText = "Tetap semangat! Yuk belajar dan coba lagi! 💪";
+                feedback.className = "text-lg font-semibold text-amber-600";
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function restartQuiz() {
+            document.getElementById('quiz-form').reset();
+            document.getElementById('result-card').classList.add('hidden');
+            document.getElementById('welcome-card').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Jalankan saat load
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
