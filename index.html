@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="jv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Tembang Dolanan Jawa</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    background: linear-gradient(135deg, #fff4c4, #dff7ff, #fce1f4);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    width: min(760px, 94%);
+    margin: 25px auto;
+}
+
+.card {
+    background: rgba(255,255,255,0.96);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header .duck {
+    font-size: 55px;
+}
+
+.header h1 {
+    margin: 5px 0;
+    color: #7b4bb7;
+    font-size: clamp(25px, 6vw, 38px);
+}
+
+.header p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.progress-area {
+    margin: 20px 0;
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: #6d4aa3;
+    margin-bottom: 7px;
+}
+
+.progress {
+    height: 13px;
+    background: #eee;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #8e5de7, #ff8dc7);
+    border-radius: 20px;
+    transition: width .4s ease;
+}
+
+.question-number {
+    display: inline-block;
+    background: #eee1ff;
+    color: #7543a8;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.question {
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1.5;
+    margin: 5px 0 20px;
+}
+
+.option {
+    width: 100%;
+    border: 3px solid #eee;
+    background: #fff;
+    border-radius: 17px;
+    padding: 15px;
+    margin: 11px 0;
+    text-align: left;
+    font-size: 17px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.option:hover {
+    border-color: #9c72db;
+    background: #faf5ff;
+    transform: translateY(-2px);
+}
+
+.option:disabled {
+    cursor: default;
+}
+
+.option.correct {
+    background: #d9ffe5;
+    border-color: #35b965;
+    color: #176c37;
+}
+
+.option.wrong {
+    background: #ffe0e0;
+    border-color: #e45656;
+    color: #9d2020;
+}
+
+.feedback {
+    display: none;
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 18px;
+    background: #f7f3ff;
+    border-left: 6px solid #8b5bd3;
+    line-height: 1.6;
+}
+
+.feedback.show {
+    display: block;
+    animation: pop .35s ease;
+}
+
+.feedback-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.next-btn, .restart-btn {
+    border: none;
+    background: linear-gradient(135deg, #8056c7, #e47eb6);
+    color: white;
+    padding: 14px 25px;
+    border-radius: 16px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: 0 6px 15px rgba(115,70,170,.25);
+}
+
+.next-btn:hover, .restart-btn:hover {
+    transform: translateY(-2px);
+}
+
+.result {
+    display: none;
+    text-align: center;
+}
+
+.result.show {
+    display: block;
+    animation: pop .5s ease;
+}
+
+.result-emoji {
+    font-size: 75px;
+}
+
+.score-circle {
+    width: 180px;
+    height: 180px;
+    margin: 20px auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: linear-gradient(135deg, #ffe36e, #ff9fd4);
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+}
+
+.score-number {
+    font-size: 45px;
+    font-weight: bold;
+    color: #633d88;
+}
+
+.score-label {
+    font-size: 15px;
+}
+
+.result-message {
+    font-size: 21px;
+    font-weight: bold;
+    color: #69458c;
+    margin: 15px 0;
+}
+
+.stars {
+    font-size: 35px;
+    margin: 10px;
+}
+
+/* GLITTER */
+.glitter {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    animation: glitterFall 900ms ease-out forwards;
+    font-size: 20px;
+}
+
+@keyframes glitterFall {
+    0% {
+        transform: translate(0,0) scale(.3) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--x), var(--y)) scale(1.4) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(.92);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@media(max-width: 500px) {
+    .card {
+        padding: 20px 16px;
+        border-radius: 22px;
+    }
+
+    .question {
+        font-size: 19px;
+    }
+
+    .option {
+        font-size: 16px;
+        padding: 14px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+    <div class="header">
+        <div class="duck">🎵 🦆 🎶</div>
+        <h1>Kuis Tembang Dolanan</h1>
+        <p><b>Siji Loro Telu</b> lan <b>Menthog-Menthog</b></p>
+        <p>Sinau karo dolanan! 🌟</p>
+    </div>
+
+    <div id="quiz">
+
+        <div class="progress-area">
+            <div class="progress-text">
+                <span id="progressText">Pitakon 1 saka 20</span>
+                <span id="scoreText">Skor: 0</span>
+            </div>
+
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="question-number" id="questionNumber">
+            Pitakon 1
+        </div>
+
+        <div class="question" id="question">
+            Pitakon bakal ditampilake ing kene.
+        </div>
+
+        <div id="options"></div>
+
+        <div class="feedback" id="feedback">
+            <div class="feedback-title" id="feedbackTitle"></div>
+            <div id="feedbackText"></div>
+            <button class="next-btn" id="nextBtn">
+                Pitakon Sabanjure ➜
+            </button>
+        </div>
+
+    </div>
+
+    <div class="result" id="result">
+
+        <div class="result-emoji" id="resultEmoji">🏆</div>
+
+        <h2>Wus Rampung! 🎉</h2>
+
+        <div class="score-circle">
+            <div class="score-number" id="finalScore">0</div>
+            <div class="score-label">Saka 100</div>
+        </div>
+
+        <div class="stars" id="stars">⭐⭐⭐⭐⭐</div>
+
+        <div class="result-message" id="resultMessage">
+            Apik banget!
+        </div>
+
+        <p id="correctInfo"></p>
+
+        <button class="restart-btn" id="restartBtn">
+            🔄 Baleni Kuis
+        </button>
+
+    </div>
+
+</div>
+</div>
+
+<script>
+
+const questions = [
+
+{
+    type: "pg",
+    question: "Tembang “Siji Loro Telu” diwiwiti kanthi tembung ....",
+    options: [
+        "Menthog menthog",
+        "Siji loro telu",
+        "Papat nuli lima",
+        "Aja padha sembrana"
+    ],
+    answer: 1,
+    explanation: "Tembang “Siji Loro Telu” diwiwiti kanthi tembung “Siji loro telu”."
+},
+
+{
+    type: "pg",
+    question: "Ing tembang “Siji Loro Telu”, tangane kudu ....",
+    options: [
+        "Ngacung",
+        "Sedheku",
+        "Nyekel dolanan",
+        "Ditepuk-tepuk"
+    ],
+    answer: 1,
+    explanation: "Ing tembang kasebut ana ukara “tangane sedheku”, tegese tangan disedekap."
+},
+
+{
+    type: "pg",
+    question: "Nalika Bu Guru ngendika, awake dhewe kudu ....",
+    options: [
+        "Turu",
+        "Mlayu",
+        "Mirengake",
+        "Dolanan"
+    ],
+    answer: 2,
+    explanation: "Nalika Bu Guru ngendika utawa menehi pitakon, kita kudu mirengake."
+},
+
+{
+    type: "pg",
+    question: "“Papat nuli lima, lungguhe sing tata” tegese lungguh kudu ....",
+    options: [
+        "Tertib",
+        "Sembrana",
+        "Rame",
+        "Mlaku-mlaku"
+    ],
+    answer: 0,
+    explanation: "“Lungguhe sing tata” tegese lungguh kanthi tertib lan rapi."
+},
+
+{
+    type: "pg",
+    question: "Aja padha sembrana, mundhak ....",
+    options: [
+        "Pinter",
+        "Ora bisa",
+        "Bisa dolanan",
+        "Entuk hadiah"
+    ],
+    answer: 1,
+    explanation: "Tembang kasebut ngelingake supaya aja sembrana, amarga bisa ndadekake ora bisa sinau kanthi becik."
+},
+
+{
+    type: "pg",
+    question: "Tembang “Siji Loro Telu” menehi piwulang supaya bocah ....",
+    options: [
+        "Tertib nalika sinau",
+        "Rame ing kelas",
+        "Turu ing kelas",
+        "Dolanan nalika guru mulang"
+    ],
+    answer: 0,
+    explanation: "Piwulang utama tembang iki yaiku supaya bocah tertib, mirengake guru, lan lungguh kanthi becik."
+},
+
+{
+    type: "pg",
+    question: "Kewan sing kasebut ing tembang “Menthog-Menthog” yaiku ....",
+    options: [
+        "Pitik",
+        "Kucing",
+        "Menthog",
+        "Kambing"
+    ],
+    answer: 2,
+    explanation: "Menthog yaiku kewan sing dadi paraga utama ing tembang “Menthog-Menthog”."
+},
+
+{
+    type: "pg",
+    question: "“Mung solahmu angisin-isini” tegese solah utawa tumindake ....",
+    options: [
+        "Nyenengake",
+        "Gawe isin",
+        "Apik banget",
+        "Nggugah ati"
+    ],
+    answer: 1,
+    explanation: "“Angisin-isini” tegese gawe isin utawa memalukan."
+},
+
+{
+    type: "pg",
+    question: "Menthog dikandhani supaya aja ....",
+    options: [
+        "Ndheprok",
+        "Mlaku",
+        "Mangan",
+        "Ngombe"
+    ],
+    answer: 0,
+    explanation: "Ing tembang ana ukara “Mbok ya aja ndheprok”, yaiku nasihat supaya aja mung lungguh utawa males."
+},
+
+{
+    type: "pg",
+    question: "Menthog seneng ana ing ....",
+    options: [
+        "Sekolah",
+        "Kandhang",
+        "Pasar",
+        "Lapangan"
+    ],
+    answer: 1,
+    explanation: "Ing tembang kasebut diarani “Ana kandhang wae”, tegese mung ana ing kandhang."
+},
+
+{
+    type: "pg",
+    question: "Nalika ana ing kandhang, menthog enak-enak ....",
+    options: [
+        "Sinau",
+        "Ngorok",
+        "Nyambut gawe",
+        "Maca"
+    ],
+    answer: 1,
+    explanation: "Tembang kasebut nyebutake “Enak-enak ngorok”, yaiku menthog turu kanthi nyenyak."
+},
+
+{
+    type: "pg",
+    question: "Menthog ora gelem ....",
+    options: [
+        "Nyambut gawe",
+        "Turu",
+        "Ana ing kandhang",
+        "Megal-megol"
+    ],
+    answer: 0,
+    explanation: "Ing tembang ana ukara “Ora nyambut gawe”, tegese menthog ora gelem nyambut gawe."
+},
+
+{
+    type: "pg",
+    question: "“Megal-megol gawe guyu” tegese mlakune menthog ....",
+    options: [
+        "Lurus",
+        "Cepet",
+        "Goyang-goyang",
+        "Alon tanpa obah"
+    ],
+    answer: 2,
+    explanation: "“Megal-megol” nggambarake cara mlakune menthog sing goyang-goyang nganti nggawe wong ngguyu."
+},
+
+{
+    type: "pg",
+    question: "Tembang “Menthog-Menthog” menehi piwulang supaya kita aja ....",
+    options: [
+        "Sregep",
+        "Males",
+        "Tertib",
+        "Rajin sinau"
+    ],
+    answer: 1,
+    explanation: "Tembang iki menehi piwulang supaya kita ora males lan gelem nyambut gawe."
+},
+
+{
+    type: "pg",
+    question: "Saka tembang “Siji Loro Telu” lan “Menthog-Menthog”, kita kudu dadi bocah sing ....",
+    options: [
+        "Males lan sembrana",
+        "Rame lan nakal",
+        "Tertib lan sregep",
+        "Seneng turu"
+    ],
+    answer: 2,
+    explanation: "Kaloro tembang kasebut menehi piwulang supaya kita tertib, mirengake guru, ora sembrana, lan ora males."
+},
+
+{
+    type: "tf",
+    question: "Ing tembang “Siji Loro Telu”, kita kudu mirengake Bu Guru.",
+    options: [
+        "Bener",
+        "Salah"
+    ],
+    answer: 0,
+    explanation: "Bener. Tembang kasebut ngandharake “Mirengake Bu Guru manawa didangu”."
+},
+
+{
+    type: "tf",
+    question: "Tembang “Siji Loro Telu” ngajari supaya bocah padha sembrana.",
+    options: [
+        "Bener",
+        "Salah"
+    ],
+    answer: 1,
+    explanation: "Salah. Tembang iki malah menehi pitutur supaya aja padha sembrana."
+},
+
+{
+    type: "tf",
+    question: "Menthog seneng ngorok ing kandhang lan ora nyambut gawe.",
+    options: [
+        "Bener",
+        "Salah"
+    ],
+    answer: 0,
+    explanation: "Bener. Ing tembang kasebut ana ukara “Enak-enak ngorok, ora nyambut gawe”."
+},
+
+{
+    type: "tf",
+    question: "“Megal-megol gawe guyu” tegese mlakune menthog nggawe wong ngguyu.",
+    options: [
+        "Bener",
+        "Salah"
+    ],
+    answer: 0,
+    explanation: "Bener. “Megal-megol” nggambarake mlakune menthog sing goyang-goyang lan nggawe wong ngguyu."
+},
+
+{
+    type: "tf",
+    question: "Tembang “Menthog-Menthog” ngajari supaya kita ora males.",
+    options: [
+        "Bener",
+        "Salah"
+    ],
+    answer: 0,
+    explanation: "Bener. Tembang iki menehi pitutur supaya ora males lan gelem nyambut gawe."
+}
+
+];
+
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const feedbackEl = document.getElementById("feedback");
+const feedbackTitle = document.getElementById("feedbackTitle");
+const feedbackText = document.getElementById("feedbackText");
+const nextBtn = document.getElementById("nextBtn");
+
+const progressText = document.getElementById("progressText");
+const scoreText = document.getElementById("scoreText");
+const progressBar = document.getElementById("progressBar");
+const questionNumber = document.getElementById("questionNumber");
+
+const quizEl = document.getElementById("quiz");
+const resultEl = document.getElementById("result");
+
+function loadQuestion() {
+
+    answered = false;
+
+    feedbackEl.classList.remove("show");
+    feedbackTitle.textContent = "";
+    feedbackText.textContent = "";
+
+    const q = questions[currentQuestion];
+
+    questionNumber.textContent = "Pitakon " + (currentQuestion + 1);
+
+    progressText.textContent =
+        "Pitakon " + (currentQuestion + 1) +
+        " saka " + questions.length;
+
+    progressBar.style.width =
+        ((currentQuestion) / questions.length * 100) + "%";
+
+    scoreText.textContent = "Skor: " + score;
+
+    questionEl.textContent = q.question;
+
+    optionsEl.innerHTML = "";
+
+    q.options.forEach((option, index) => {
+
+        const button = document.createElement("button");
+
+        button.className = "option";
+
+        button.textContent =
+            q.type === "pg"
+            ? String.fromCharCode(65 + index) + ". " + option
+            : option;
+
+        button.addEventListener("click", function() {
+            chooseAnswer(index);
+        });
+
+        optionsEl.appendChild(button);
+    });
+}
+
+function chooseAnswer(selected) {
+
+    if (answered) return;
+
+    answered = true;
+
+    const q = questions[currentQuestion];
+    const buttons = document.querySelectorAll(".option");
+
+    buttons.forEach(btn => {
+        btn.disabled = true;
+    });
+
+    if (selected === q.answer) {
+
+        score += 1;
+
+        buttons[selected].classList.add("correct");
+
+        feedbackTitle.textContent = "🎉 Jawabanmu Bener!";
+
+        feedbackText.textContent = q.explanation;
+
+        createGlitter();
+
+    } else {
+
+        buttons[selected].classList.add("wrong");
+
+        buttons[q.answer].classList.add("correct");
+
+        feedbackTitle.textContent = "💡 Durung Tepat";
+
+        feedbackText.textContent =
+            q.explanation +
+            " Jawaban sing bener yaiku " +
+            q.options[q.answer] + ".";
+    }
+
+    scoreText.textContent = "Skor: " + score;
+
+    feedbackEl.classList.add("show");
+
+    if (currentQuestion === questions.length - 1) {
+        nextBtn.textContent = "🏆 Delengen Asil";
+    } else {
+        nextBtn.textContent = "Pitakon Sabanjure ➜";
+    }
+}
+
+nextBtn.addEventListener("click", function() {
+
+    currentQuestion++;
+
+    if (currentQuestion >= questions.length) {
+        showResult();
+    } else {
+        loadQuestion();
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+});
+
+function createGlitter() {
+
+    const symbols = ["✨", "⭐", "🌟", "💫", "🎉"];
+
+    for (let i = 0; i < 35; i++) {
+
+        const glitter = document.createElement("div");
+
+        glitter.className = "glitter";
+
+        glitter.textContent =
+            symbols[Math.floor(Math.random() * symbols.length)];
+
+        glitter.style.left =
+            (35 + Math.random() * 30) + "%";
+
+        glitter.style.top =
+            (25 + Math.random() * 30) + "%";
+
+        glitter.style.setProperty(
+            "--x",
+            ((Math.random() - 0.5) * 500) + "px"
+        );
+
+        glitter.style.setProperty(
+            "--y",
+            ((Math.random() - 0.5) * 450) + "px"
+        );
+
+        glitter.style.animationDelay =
+            (Math.random() * 250) + "ms";
+
+        document.body.appendChild(glitter);
+
+        setTimeout(() => {
+            glitter.remove();
+        }, 1300);
+    }
+}
+
+function showResult() {
+
+    quizEl.style.display = "none";
+    resultEl.classList.add("show");
+
+    const finalScore =
+        Math.round((score / questions.length) * 100);
+
+    document.getElementById("finalScore").textContent =
+        finalScore;
+
+    document.getElementById("correctInfo").textContent =
+        "Jawaban bener: " + score +
+        " saka " + questions.length + " pitakon.";
+
+    let message;
+    let emoji;
+    let stars;
+
+    if (finalScore === 100) {
+
+        message = "Luar biasa! Kowe pancen jago tembang dolanan! 🏆";
+        emoji = "🏆";
+        stars = "⭐⭐⭐⭐⭐";
+
+    } else if (finalScore >= 80) {
+
+        message = "Apik banget! Terus semangat sinau! 🌟";
+        emoji = "🎉";
+        stars = "⭐⭐⭐⭐⭐";
+
+    } else if (finalScore >= 60) {
+
+        message = "Apik! Ayo sinau maneh supaya luwih jago! 😊";
+        emoji = "🌟";
+        stars = "⭐⭐⭐⭐";
+
+    } else if (finalScore >= 40) {
+
+        message = "Wis apik, nanging kudu luwih sregep sinau maneh! 💪";
+        emoji = "😊";
+        stars = "⭐⭐⭐";
+
+    } else {
+
+        message = "Ayo sinau maneh. Kowe mesthi bisa! 💪📚";
+        emoji = "📚";
+        stars = "⭐⭐";
+
+    }
+
+    document.getElementById("resultMessage").textContent =
+        message;
+
+    document.getElementById("resultEmoji").textContent =
+        emoji;
+
+    document.getElementById("stars").textContent =
+        stars;
+
+    createGlitter();
+
+}
+
+document.getElementById("restartBtn").addEventListener("click", function() {
+
+    currentQuestion = 0;
+    score = 0;
+
+    resultEl.classList.remove("show");
+    quizEl.style.display = "block";
+
+    loadQuestion();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+});
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
