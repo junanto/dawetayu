@@ -1,855 +1,529 @@
 <!DOCTYPE html>
-<html lang="jv">
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kuis Tembang Dolanan Jawa</title>
-
-<style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: "Trebuchet MS", Arial, sans-serif;
-    background: linear-gradient(135deg, #fff4c4, #dff7ff, #fce1f4);
-    min-height: 100vh;
-    color: #333;
-}
-
-.container {
-    width: min(760px, 94%);
-    margin: 25px auto;
-}
-
-.card {
-    background: rgba(255,255,255,0.96);
-    border-radius: 28px;
-    padding: 28px;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.12);
-    position: relative;
-    overflow: hidden;
-}
-
-.header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.header .duck {
-    font-size: 55px;
-}
-
-.header h1 {
-    margin: 5px 0;
-    color: #7b4bb7;
-    font-size: clamp(25px, 6vw, 38px);
-}
-
-.header p {
-    margin: 5px 0;
-    color: #666;
-}
-
-.progress-area {
-    margin: 20px 0;
-}
-
-.progress-text {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    color: #6d4aa3;
-    margin-bottom: 7px;
-}
-
-.progress {
-    height: 13px;
-    background: #eee;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #8e5de7, #ff8dc7);
-    border-radius: 20px;
-    transition: width .4s ease;
-}
-
-.question-number {
-    display: inline-block;
-    background: #eee1ff;
-    color: #7543a8;
-    padding: 7px 14px;
-    border-radius: 20px;
-    font-weight: bold;
-    margin-bottom: 12px;
-}
-
-.question {
-    font-size: 22px;
-    font-weight: bold;
-    line-height: 1.5;
-    margin: 5px 0 20px;
-}
-
-.option {
-    width: 100%;
-    border: 3px solid #eee;
-    background: #fff;
-    border-radius: 17px;
-    padding: 15px;
-    margin: 11px 0;
-    text-align: left;
-    font-size: 17px;
-    cursor: pointer;
-    transition: .2s;
-}
-
-.option:hover {
-    border-color: #9c72db;
-    background: #faf5ff;
-    transform: translateY(-2px);
-}
-
-.option:disabled {
-    cursor: default;
-}
-
-.option.correct {
-    background: #d9ffe5;
-    border-color: #35b965;
-    color: #176c37;
-}
-
-.option.wrong {
-    background: #ffe0e0;
-    border-color: #e45656;
-    color: #9d2020;
-}
-
-.feedback {
-    display: none;
-    margin-top: 20px;
-    padding: 18px;
-    border-radius: 18px;
-    background: #f7f3ff;
-    border-left: 6px solid #8b5bd3;
-    line-height: 1.6;
-}
-
-.feedback.show {
-    display: block;
-    animation: pop .35s ease;
-}
-
-.feedback-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.next-btn, .restart-btn {
-    border: none;
-    background: linear-gradient(135deg, #8056c7, #e47eb6);
-    color: white;
-    padding: 14px 25px;
-    border-radius: 16px;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 15px;
-    box-shadow: 0 6px 15px rgba(115,70,170,.25);
-}
-
-.next-btn:hover, .restart-btn:hover {
-    transform: translateY(-2px);
-}
-
-.result {
-    display: none;
-    text-align: center;
-}
-
-.result.show {
-    display: block;
-    animation: pop .5s ease;
-}
-
-.result-emoji {
-    font-size: 75px;
-}
-
-.score-circle {
-    width: 180px;
-    height: 180px;
-    margin: 20px auto;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background: linear-gradient(135deg, #ffe36e, #ff9fd4);
-    box-shadow: 0 10px 30px rgba(0,0,0,.15);
-}
-
-.score-number {
-    font-size: 45px;
-    font-weight: bold;
-    color: #633d88;
-}
-
-.score-label {
-    font-size: 15px;
-}
-
-.result-message {
-    font-size: 21px;
-    font-weight: bold;
-    color: #69458c;
-    margin: 15px 0;
-}
-
-.stars {
-    font-size: 35px;
-    margin: 10px;
-}
-
-/* GLITTER */
-.glitter {
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    animation: glitterFall 900ms ease-out forwards;
-    font-size: 20px;
-}
-
-@keyframes glitterFall {
-    0% {
-        transform: translate(0,0) scale(.3) rotate(0deg);
-        opacity: 1;
-    }
-    100% {
-        transform: translate(var(--x), var(--y)) scale(1.4) rotate(360deg);
-        opacity: 0;
-    }
-}
-
-@keyframes pop {
-    0% {
-        transform: scale(.92);
-        opacity: 0;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@media(max-width: 500px) {
-    .card {
-        padding: 20px 16px;
-        border-radius: 22px;
-    }
-
-    .question {
-        font-size: 19px;
-    }
-
-    .option {
-        font-size: 16px;
-        padding: 14px;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Seru Bahasa Indonesia - Kelas 1 SD</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #a8edf0 0%, #fed6e3 100%);
+            min-height: 100vh;
+        }
+        .font-fredoka {
+            font-family: 'Fredoka One', cursive;
+        }
+        .font-comic {
+            font-family: 'Comic Neue', cursive;
+        }
+        .btn-bounce {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-bounce:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+        .btn-bounce:active {
+            transform: translateY(2px) scale(0.98);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
+<body class="flex items-center justify-center p-4">
 
-<body>
+    <!-- Container Utama -->
+    <div id="quiz-container" class="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full border-4 border-yellow-300 card-shadow relative overflow-hidden">
+        
+        <!-- Header / Halaman Awal -->
+        <div id="welcome-screen" class="text-center py-6">
+            <div class="text-6xl mb-4 animate-bounce">🎈📚✏️</div>
+            <h1 class="text-3xl sm:text-4xl font-fredoka text-indigo-600 mb-4 tracking-wide">
+                Kuis Seru Bahasa Indonesia
+            </h1>
+            <p class="text-lg text-gray-700 font-comic mb-2">Kelas 1 SD • Kurikulum Merdeka</p>
+            <div class="bg-indigo-50 rounded-2xl p-4 mb-6 text-left border-2 border-indigo-200">
+                <h3 class="font-bold text-indigo-800 mb-2 text-center text-lg">Materi Kuis:</h3>
+                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                    <li>Tanda Baca Seru (!)</li>
+                    <li>Huruf Vokal dan Konsonan</li>
+                    <li>Suku Kata: <b>ha, hi, hu, he, ho</b></li>
+                </ul>
+                <div class="mt-4 pt-3 border-t border-indigo-100 flex justify-around text-center text-sm font-bold text-indigo-600">
+                    <div>📝 15 Pilihan Ganda</div>
+                    <div>✔️ 10 Benar / Salah</div>
+                </div>
+            </div>
+            <button onclick="startQuiz()" class="btn-bounce bg-yellow-400 hover:bg-yellow-300 text-indigo-900 font-fredoka text-2xl py-4 px-10 rounded-full border-b-4 border-yellow-500 shadow-lg">
+                MULAI KUIS! 🚀
+            </button>
+        </div>
 
-<div class="container">
-
-<div class="card">
-
-    <div class="header">
-        <div class="duck">🎵 🦆 🎶</div>
-        <h1>Kuis Tembang Dolanan</h1>
-        <p><b>Siji Loro Telu</b> lan <b>Menthog-Menthog</b></p>
-        <p>Sinau karo dolanan! 🌟</p>
-    </div>
-
-    <div id="quiz">
-
-        <div class="progress-area">
-            <div class="progress-text">
-                <span id="progressText">Pitakon 1 saka 20</span>
-                <span id="scoreText">Skor: 0</span>
+        <!-- Halaman Kuis -->
+        <div id="quiz-screen" class="hidden">
+            <!-- Progress Bar & Indicator -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span id="question-badge" class="bg-indigo-100 text-indigo-800 text-sm font-bold px-3 py-1 rounded-full border border-indigo-300">
+                        Soal Pilihan Ganda
+                    </span>
+                    <span id="question-count" class="font-fredoka text-gray-600 text-lg">
+                        1 / 25
+                    </span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4 border border-gray-300 overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-yellow-400 to-pink-500 h-4 rounded-full transition-all duration-300" style="width: 4%"></div>
+                </div>
             </div>
 
-            <div class="progress">
-                <div class="progress-bar" id="progressBar"></div>
+            <!-- Kartu Soal -->
+            <div class="bg-amber-50 rounded-2xl p-5 mb-6 border-2 border-amber-200">
+                <h2 id="question-text" class="text-xl sm:text-2xl font-bold text-gray-800 leading-snug">
+                    Teks Soal Akan Muncul Di Sini
+                </h2>
+            </div>
+
+            <!-- Pilihan Jawaban -->
+            <div id="options-container" class="space-y-3 mb-6">
+                <!-- Opsi Jawaban Dinamis -->
+            </div>
+
+            <!-- Kotak Pembahasan (Awalnya Tersembunyi) -->
+            <div id="explanation-box" class="hidden bg-blue-50 border-2 border-blue-300 rounded-2xl p-4 mb-6 text-gray-800">
+                <div class="flex items-center mb-1">
+                    <span id="explanation-icon" class="text-2xl mr-2">💡</span>
+                    <h4 id="explanation-title" class="font-bold text-lg text-blue-900">Pembahasan:</h4>
+                </div>
+                <p id="explanation-text" class="text-base text-gray-700">
+                    Penjelasan singkat akan tampil di sini.
+                </p>
+            </div>
+
+            <!-- Tombol Lanjut -->
+            <div class="flex justify-end">
+                <button id="next-btn" onclick="nextQuestion()" class="hidden btn-bounce bg-emerald-500 hover:bg-emerald-400 text-white font-fredoka text-xl py-3 px-8 rounded-full border-b-4 border-emerald-600 shadow-md">
+                    Lanjut ➔
+                </button>
             </div>
         </div>
 
-        <div class="question-number" id="questionNumber">
-            Pitakon 1
-        </div>
+        <!-- Halaman Hasil / Skor Akhir -->
+        <div id="result-screen" class="hidden text-center py-6">
+            <div id="result-emoji" class="text-7xl mb-2">🏆</div>
+            <h2 id="result-title" class="text-3xl font-fredoka text-indigo-700 mb-2">Luar Biasa!</h2>
+            <p id="result-subtitle" class="text-gray-600 text-lg mb-6">Kamu telah menyelesaikan seluruh soal kuis!</p>
 
-        <div class="question" id="question">
-            Pitakon bakal ditampilake ing kene.
-        </div>
+            <!-- Card Skor -->
+            <div class="bg-gradient-to-b from-indigo-50 to-pink-50 border-4 border-indigo-200 rounded-3xl p-6 mb-6 shadow-inner">
+                <p class="text-gray-600 font-bold uppercase tracking-wider text-sm mb-1">Skor Kamu</p>
+                <div id="final-score" class="text-6xl font-fredoka text-indigo-600 mb-2">100</div>
+                <div id="stars-container" class="text-4xl mb-4">⭐⭐⭐</div>
+                
+                <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-indigo-100 text-center">
+                    <div class="bg-emerald-100 p-3 rounded-2xl border border-emerald-300">
+                        <span class="block text-2xl font-bold text-emerald-700" id="correct-count">0</span>
+                        <span class="text-xs font-bold text-emerald-800">Jawaban Benar</span>
+                    </div>
+                    <div class="bg-rose-100 p-3 rounded-2xl border border-rose-300">
+                        <span class="block text-2xl font-bold text-rose-700" id="wrong-count">0</span>
+                        <span class="text-xs font-bold text-rose-800">Jawaban Salah</span>
+                    </div>
+                </div>
+            </div>
 
-        <div id="options"></div>
-
-        <div class="feedback" id="feedback">
-            <div class="feedback-title" id="feedbackTitle"></div>
-            <div id="feedbackText"></div>
-            <button class="next-btn" id="nextBtn">
-                Pitakon Sabanjure ➜
+            <button onclick="restartQuiz()" class="btn-bounce bg-indigo-600 hover:bg-indigo-500 text-white font-fredoka text-xl py-4 px-10 rounded-full border-b-4 border-indigo-800 shadow-lg">
+                Main Lagi 🔄
             </button>
         </div>
 
     </div>
 
-    <div class="result" id="result">
-
-        <div class="result-emoji" id="resultEmoji">🏆</div>
-
-        <h2>Wus Rampung! 🎉</h2>
-
-        <div class="score-circle">
-            <div class="score-number" id="finalScore">0</div>
-            <div class="score-label">Saka 100</div>
-        </div>
-
-        <div class="stars" id="stars">⭐⭐⭐⭐⭐</div>
-
-        <div class="result-message" id="resultMessage">
-            Apik banget!
-        </div>
-
-        <p id="correctInfo"></p>
-
-        <button class="restart-btn" id="restartBtn">
-            🔄 Baleni Kuis
-        </button>
-
-    </div>
-
-</div>
-</div>
-
-<script>
-
-const questions = [
-
-{
-    type: "pg",
-    question: "Tembang “Siji Loro Telu” diwiwiti kanthi tembung ....",
-    options: [
-        "Menthog menthog",
-        "Siji loro telu",
-        "Papat nuli lima",
-        "Aja padha sembrana"
-    ],
-    answer: 1,
-    explanation: "Tembang “Siji Loro Telu” diwiwiti kanthi tembung “Siji loro telu”."
-},
-
-{
-    type: "pg",
-    question: "Ing tembang “Siji Loro Telu”, tangane kudu ....",
-    options: [
-        "Ngacung",
-        "Sedheku",
-        "Nyekel dolanan",
-        "Ditepuk-tepuk"
-    ],
-    answer: 1,
-    explanation: "Ing tembang kasebut ana ukara “tangane sedheku”, tegese tangan disedekap."
-},
-
-{
-    type: "pg",
-    question: "Nalika Bu Guru ngendika, awake dhewe kudu ....",
-    options: [
-        "Turu",
-        "Mlayu",
-        "Mirengake",
-        "Dolanan"
-    ],
-    answer: 2,
-    explanation: "Nalika Bu Guru ngendika utawa menehi pitakon, kita kudu mirengake."
-},
-
-{
-    type: "pg",
-    question: "“Papat nuli lima, lungguhe sing tata” tegese lungguh kudu ....",
-    options: [
-        "Tertib",
-        "Sembrana",
-        "Rame",
-        "Mlaku-mlaku"
-    ],
-    answer: 0,
-    explanation: "“Lungguhe sing tata” tegese lungguh kanthi tertib lan rapi."
-},
-
-{
-    type: "pg",
-    question: "Aja padha sembrana, mundhak ....",
-    options: [
-        "Pinter",
-        "Ora bisa",
-        "Bisa dolanan",
-        "Entuk hadiah"
-    ],
-    answer: 1,
-    explanation: "Tembang kasebut ngelingake supaya aja sembrana, amarga bisa ndadekake ora bisa sinau kanthi becik."
-},
-
-{
-    type: "pg",
-    question: "Tembang “Siji Loro Telu” menehi piwulang supaya bocah ....",
-    options: [
-        "Tertib nalika sinau",
-        "Rame ing kelas",
-        "Turu ing kelas",
-        "Dolanan nalika guru mulang"
-    ],
-    answer: 0,
-    explanation: "Piwulang utama tembang iki yaiku supaya bocah tertib, mirengake guru, lan lungguh kanthi becik."
-},
-
-{
-    type: "pg",
-    question: "Kewan sing kasebut ing tembang “Menthog-Menthog” yaiku ....",
-    options: [
-        "Pitik",
-        "Kucing",
-        "Menthog",
-        "Kambing"
-    ],
-    answer: 2,
-    explanation: "Menthog yaiku kewan sing dadi paraga utama ing tembang “Menthog-Menthog”."
-},
-
-{
-    type: "pg",
-    question: "“Mung solahmu angisin-isini” tegese solah utawa tumindake ....",
-    options: [
-        "Nyenengake",
-        "Gawe isin",
-        "Apik banget",
-        "Nggugah ati"
-    ],
-    answer: 1,
-    explanation: "“Angisin-isini” tegese gawe isin utawa memalukan."
-},
-
-{
-    type: "pg",
-    question: "Menthog dikandhani supaya aja ....",
-    options: [
-        "Ndheprok",
-        "Mlaku",
-        "Mangan",
-        "Ngombe"
-    ],
-    answer: 0,
-    explanation: "Ing tembang ana ukara “Mbok ya aja ndheprok”, yaiku nasihat supaya aja mung lungguh utawa males."
-},
-
-{
-    type: "pg",
-    question: "Menthog seneng ana ing ....",
-    options: [
-        "Sekolah",
-        "Kandhang",
-        "Pasar",
-        "Lapangan"
-    ],
-    answer: 1,
-    explanation: "Ing tembang kasebut diarani “Ana kandhang wae”, tegese mung ana ing kandhang."
-},
-
-{
-    type: "pg",
-    question: "Nalika ana ing kandhang, menthog enak-enak ....",
-    options: [
-        "Sinau",
-        "Ngorok",
-        "Nyambut gawe",
-        "Maca"
-    ],
-    answer: 1,
-    explanation: "Tembang kasebut nyebutake “Enak-enak ngorok”, yaiku menthog turu kanthi nyenyak."
-},
-
-{
-    type: "pg",
-    question: "Menthog ora gelem ....",
-    options: [
-        "Nyambut gawe",
-        "Turu",
-        "Ana ing kandhang",
-        "Megal-megol"
-    ],
-    answer: 0,
-    explanation: "Ing tembang ana ukara “Ora nyambut gawe”, tegese menthog ora gelem nyambut gawe."
-},
-
-{
-    type: "pg",
-    question: "“Megal-megol gawe guyu” tegese mlakune menthog ....",
-    options: [
-        "Lurus",
-        "Cepet",
-        "Goyang-goyang",
-        "Alon tanpa obah"
-    ],
-    answer: 2,
-    explanation: "“Megal-megol” nggambarake cara mlakune menthog sing goyang-goyang nganti nggawe wong ngguyu."
-},
-
-{
-    type: "pg",
-    question: "Tembang “Menthog-Menthog” menehi piwulang supaya kita aja ....",
-    options: [
-        "Sregep",
-        "Males",
-        "Tertib",
-        "Rajin sinau"
-    ],
-    answer: 1,
-    explanation: "Tembang iki menehi piwulang supaya kita ora males lan gelem nyambut gawe."
-},
-
-{
-    type: "pg",
-    question: "Saka tembang “Siji Loro Telu” lan “Menthog-Menthog”, kita kudu dadi bocah sing ....",
-    options: [
-        "Males lan sembrana",
-        "Rame lan nakal",
-        "Tertib lan sregep",
-        "Seneng turu"
-    ],
-    answer: 2,
-    explanation: "Kaloro tembang kasebut menehi piwulang supaya kita tertib, mirengake guru, ora sembrana, lan ora males."
-},
-
-{
-    type: "tf",
-    question: "Ing tembang “Siji Loro Telu”, kita kudu mirengake Bu Guru.",
-    options: [
-        "Bener",
-        "Salah"
-    ],
-    answer: 0,
-    explanation: "Bener. Tembang kasebut ngandharake “Mirengake Bu Guru manawa didangu”."
-},
-
-{
-    type: "tf",
-    question: "Tembang “Siji Loro Telu” ngajari supaya bocah padha sembrana.",
-    options: [
-        "Bener",
-        "Salah"
-    ],
-    answer: 1,
-    explanation: "Salah. Tembang iki malah menehi pitutur supaya aja padha sembrana."
-},
-
-{
-    type: "tf",
-    question: "Menthog seneng ngorok ing kandhang lan ora nyambut gawe.",
-    options: [
-        "Bener",
-        "Salah"
-    ],
-    answer: 0,
-    explanation: "Bener. Ing tembang kasebut ana ukara “Enak-enak ngorok, ora nyambut gawe”."
-},
-
-{
-    type: "tf",
-    question: "“Megal-megol gawe guyu” tegese mlakune menthog nggawe wong ngguyu.",
-    options: [
-        "Bener",
-        "Salah"
-    ],
-    answer: 0,
-    explanation: "Bener. “Megal-megol” nggambarake mlakune menthog sing goyang-goyang lan nggawe wong ngguyu."
-},
-
-{
-    type: "tf",
-    question: "Tembang “Menthog-Menthog” ngajari supaya kita ora males.",
-    options: [
-        "Bener",
-        "Salah"
-    ],
-    answer: 0,
-    explanation: "Bener. Tembang iki menehi pitutur supaya ora males lan gelem nyambut gawe."
-}
-
-];
-
-let currentQuestion = 0;
-let score = 0;
-let answered = false;
-
-const questionEl = document.getElementById("question");
-const optionsEl = document.getElementById("options");
-const feedbackEl = document.getElementById("feedback");
-const feedbackTitle = document.getElementById("feedbackTitle");
-const feedbackText = document.getElementById("feedbackText");
-const nextBtn = document.getElementById("nextBtn");
-
-const progressText = document.getElementById("progressText");
-const scoreText = document.getElementById("scoreText");
-const progressBar = document.getElementById("progressBar");
-const questionNumber = document.getElementById("questionNumber");
-
-const quizEl = document.getElementById("quiz");
-const resultEl = document.getElementById("result");
-
-function loadQuestion() {
-
-    answered = false;
-
-    feedbackEl.classList.remove("show");
-    feedbackTitle.textContent = "";
-    feedbackText.textContent = "";
-
-    const q = questions[currentQuestion];
-
-    questionNumber.textContent = "Pitakon " + (currentQuestion + 1);
-
-    progressText.textContent =
-        "Pitakon " + (currentQuestion + 1) +
-        " saka " + questions.length;
-
-    progressBar.style.width =
-        ((currentQuestion) / questions.length * 100) + "%";
-
-    scoreText.textContent = "Skor: " + score;
-
-    questionEl.textContent = q.question;
-
-    optionsEl.innerHTML = "";
-
-    q.options.forEach((option, index) => {
-
-        const button = document.createElement("button");
-
-        button.className = "option";
-
-        button.textContent =
-            q.type === "pg"
-            ? String.fromCharCode(65 + index) + ". " + option
-            : option;
-
-        button.addEventListener("click", function() {
-            chooseAnswer(index);
-        });
-
-        optionsEl.appendChild(button);
-    });
-}
-
-function chooseAnswer(selected) {
-
-    if (answered) return;
-
-    answered = true;
-
-    const q = questions[currentQuestion];
-    const buttons = document.querySelectorAll(".option");
-
-    buttons.forEach(btn => {
-        btn.disabled = true;
-    });
-
-    if (selected === q.answer) {
-
-        score += 1;
-
-        buttons[selected].classList.add("correct");
-
-        feedbackTitle.textContent = "🎉 Jawabanmu Bener!";
-
-        feedbackText.textContent = q.explanation;
-
-        createGlitter();
-
-    } else {
-
-        buttons[selected].classList.add("wrong");
-
-        buttons[q.answer].classList.add("correct");
-
-        feedbackTitle.textContent = "💡 Durung Tepat";
-
-        feedbackText.textContent =
-            q.explanation +
-            " Jawaban sing bener yaiku " +
-            q.options[q.answer] + ".";
-    }
-
-    scoreText.textContent = "Skor: " + score;
-
-    feedbackEl.classList.add("show");
-
-    if (currentQuestion === questions.length - 1) {
-        nextBtn.textContent = "🏆 Delengen Asil";
-    } else {
-        nextBtn.textContent = "Pitakon Sabanjure ➜";
-    }
-}
-
-nextBtn.addEventListener("click", function() {
-
-    currentQuestion++;
-
-    if (currentQuestion >= questions.length) {
-        showResult();
-    } else {
-        loadQuestion();
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
-
-});
-
-function createGlitter() {
-
-    const symbols = ["✨", "⭐", "🌟", "💫", "🎉"];
-
-    for (let i = 0; i < 35; i++) {
-
-        const glitter = document.createElement("div");
-
-        glitter.className = "glitter";
-
-        glitter.textContent =
-            symbols[Math.floor(Math.random() * symbols.length)];
-
-        glitter.style.left =
-            (35 + Math.random() * 30) + "%";
-
-        glitter.style.top =
-            (25 + Math.random() * 30) + "%";
-
-        glitter.style.setProperty(
-            "--x",
-            ((Math.random() - 0.5) * 500) + "px"
-        );
-
-        glitter.style.setProperty(
-            "--y",
-            ((Math.random() - 0.5) * 450) + "px"
-        );
-
-        glitter.style.animationDelay =
-            (Math.random() * 250) + "ms";
-
-        document.body.appendChild(glitter);
-
-        setTimeout(() => {
-            glitter.remove();
-        }, 1300);
-    }
-}
-
-function showResult() {
-
-    quizEl.style.display = "none";
-    resultEl.classList.add("show");
-
-    const finalScore =
-        Math.round((score / questions.length) * 100);
-
-    document.getElementById("finalScore").textContent =
-        finalScore;
-
-    document.getElementById("correctInfo").textContent =
-        "Jawaban bener: " + score +
-        " saka " + questions.length + " pitakon.";
-
-    let message;
-    let emoji;
-    let stars;
-
-    if (finalScore === 100) {
-
-        message = "Luar biasa! Kowe pancen jago tembang dolanan! 🏆";
-        emoji = "🏆";
-        stars = "⭐⭐⭐⭐⭐";
-
-    } else if (finalScore >= 80) {
-
-        message = "Apik banget! Terus semangat sinau! 🌟";
-        emoji = "🎉";
-        stars = "⭐⭐⭐⭐⭐";
-
-    } else if (finalScore >= 60) {
-
-        message = "Apik! Ayo sinau maneh supaya luwih jago! 😊";
-        emoji = "🌟";
-        stars = "⭐⭐⭐⭐";
-
-    } else if (finalScore >= 40) {
-
-        message = "Wis apik, nanging kudu luwih sregep sinau maneh! 💪";
-        emoji = "😊";
-        stars = "⭐⭐⭐";
-
-    } else {
-
-        message = "Ayo sinau maneh. Kowe mesthi bisa! 💪📚";
-        emoji = "📚";
-        stars = "⭐⭐";
-
-    }
-
-    document.getElementById("resultMessage").textContent =
-        message;
-
-    document.getElementById("resultEmoji").textContent =
-        emoji;
-
-    document.getElementById("stars").textContent =
-        stars;
-
-    createGlitter();
-
-}
-
-document.getElementById("restartBtn").addEventListener("click", function() {
-
-    currentQuestion = 0;
-    score = 0;
-
-    resultEl.classList.remove("show");
-    quizEl.style.display = "block";
-
-    loadQuestion();
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-});
-
-loadQuestion();
-
-</script>
-
+    <script>
+        // Data Soal (15 Pilihan Ganda + 10 Benar/Salah)
+        const quizData = [
+            // --- 15 SOAL PILIHAN GANDA (3 Opsi: A, B, C) ---
+            {
+                type: "mcq",
+                question: "1. Kalimat yang menunjukkan ungkapan perintah atau seruan diakhiri dengan tanda ...",
+                options: ["A. Titik (.)", "B. Seru (!)", "C. Tanya (?)"],
+                correct: 1,
+                explanation: "Tanda seru (!) digunakan di akhir kalimat perintah atau ajakan."
+            },
+            {
+                type: "mcq",
+                question: "2. Manakah kalimat berikut yang harus menggunakan tanda seru (!)?",
+                options: ["A. Siapa namamu", "B. Buanglah sampah di tempat sampah", "C. Ibu membeli buah"],
+                correct: 1,
+                explanation: "'Buanglah sampah di tempat sampah!' adalah kalimat perintah, jadi memakai tanda seru."
+            },
+            {
+                type: "mcq",
+                question: "3. 'Awas, ada lubang ...' Tanda baca yang tepat untuk melengkapi kalimat di samping adalah ...",
+                options: ["A. !", "B. ?", "C. ."],
+                correct: 0,
+                explanation: "Kalimat peringatan atau larangan diakhiri dengan tanda seru (!)."
+            },
+            {
+                type: "mcq",
+                question: "4. Di bawah ini yang merupakan contoh huruf vokal adalah ...",
+                options: ["A. b, c, d", "B. a, i, u", "C. k, l, m"],
+                correct: 1,
+                explanation: "Huruf vokal terdiri dari 5 huruf, yaitu: a, i, u, e, o."
+            },
+            {
+                type: "mcq",
+                question: "5. Ada berapa jumlah huruf vokal dalam alfabet?",
+                options: ["A. 3", "B. 5", "C. 7"],
+                correct: 1,
+                explanation: "Huruf vokal ada 5 yaitu a, i, u, e, dan o."
+            },
+            {
+                type: "mcq",
+                question: "6. Huruf pertama dari kata 'Apel' adalah huruf vokal ...",
+                options: ["A. a", "B. e", "C. o"],
+                correct: 0,
+                explanation: "Kata 'Apel' diawali dengan huruf vokal 'a'."
+            },
+            {
+                type: "mcq",
+                question: "7. Di bawah ini yang Semuanya merupakan huruf konsonan adalah ...",
+                options: ["A. a, b, c", "B. b, c, d", "C. i, u, e"],
+                correct: 1,
+                explanation: "Huruf konsonan adalah huruf selain vokal, contohnya b, c, d, f, g, dst."
+            },
+            {
+                type: "mcq",
+                question: "8. Suku kata pertama dari kata 'Harimau' adalah ...",
+                options: ["A. ha", "B. hi", "C. hu"],
+                correct: 0,
+                explanation: "Kata 'Harimau' dieja ha-ri-mau, jadi suku kata pertamanya adalah 'ha'."
+            },
+            {
+                type: "mcq",
+                question: "9. Hewan berbelalai panjang yang diawali suku kata 'Hu' adalah ...",
+                options: ["A. Hiu", "B. Hutan", "C. Hujan"],
+                correct: 0,
+                explanation: "Nama hewan tersebut adalah Hiu (hi-u) atau bisa diawali suku kata Hu untuk kata lain."
+            },
+            {
+                type: "mcq",
+                question: "10. Suku kata yang tepat untuk melengkapi kata '...-tam' (warna) adalah ...",
+                options: ["A. hi", "B. he", "C. ho"],
+                correct: 0,
+                explanation: "Suku kata 'hi' jika digabung dengan 'tam' menjadi kata 'hitam'."
+            },
+            {
+                type: "mcq",
+                question: "11. Benda yang dipakai di kepala saat naik motor adalah '...-lm'. Suku kata yang tepat adalah ...",
+                options: ["A. ha", "B. he", "C. ho"],
+                correct: 1,
+                explanation: "Suku kata 'he' jika digabung dengan 'lm' menjadi kata 'helm'."
+            },
+            {
+                type: "mcq",
+                question: "12. Bangunan tempat menginap saat liburan adalah '...-tel'. Suku kata yang tepat adalah ...",
+                options: ["A. ho", "B. hu", "C. hi"],
+                correct: 0,
+                explanation: "Suku kata 'ho' jika digabung dengan 'tel' menjadi kata 'hotel'."
+            },
+            {
+                type: "mcq",
+                question: "13. 'Tolong ambilkan buku itu...!' Ungkapan ini menyatakan ...",
+                options: ["A. Pertanyaan", "B. Perintah/Permintaan", "C. Berita"],
+                correct: 1,
+                explanation: "Kalimat yang menggunakan kata 'tolong' dan tanda seru adalah kalimat perintah/permintaan."
+            },
+            {
+                type: "mcq",
+                question: "14. Manakah kata di bawah ini yang diawali dengan huruf konsonan?",
+                options: ["A. Ular", "B. Eland", "C. Babi"],
+                correct: 2,
+                explanation: "Kata 'Babi' diawali huruf 'b' yang merupakan huruf konsonan."
+            },
+            {
+                type: "mcq",
+                question: "15. Susunan suku kata 'hu' dan 'jan' jika digabung menjadi kata ...",
+                options: ["A. Hujan", "B. Hutan", "C. Hidung"],
+                correct: 0,
+                explanation: "Suku kata hu-jan dibaca 'Hujan'."
+            },
+
+            // --- 10 SOAL BENAR / SALAH ---
+            {
+                type: "tf",
+                question: "16. [Benar/Salah] Tanda baca seru (!) digunakan untuk kalimat bertanya.",
+                options: ["BENAR", "SALAH"],
+                correct: 1, // SALAH
+                explanation: "Salah! Kalimat bertanya menggunakan tanda tanya (?), sedangkan tanda seru (!) untuk perintah."
+            },
+            {
+                type: "tf",
+                question: "17. [Benar/Salah] Kalimat 'Jangan lari-lari!' menggunakan tanda baca yang benar.",
+                options: ["BENAR", "SALAH"],
+                correct: 0, // BENAR
+                explanation: "Benar! Kalimat larangan diakhiri dengan tanda baca seru (!)."
+            },
+            {
+                type: "tf",
+                question: "18. [Benar/Salah] Huruf 'A, I, U, E, O' disebut sebagai huruf konsonan.",
+                options: ["BENAR", "SALAH"],
+                correct: 1, // SALAH
+                explanation: "Salah! Huruf A, I, U, E, O adalah huruf vokal."
+            },
+            {
+                type: "tf",
+                question: "19. [Benar/Salah] Huruf 'B, C, D, F' adalah contoh huruf konsonan.",
+                options: ["BENAR", "SALAH"],
+                correct: 0, // BENAR
+                explanation: "Benar! Huruf selain vokal dinamakan huruf konsonan."
+            },
+            {
+                type: "tf",
+                question: "20. [Benar/Salah] Kata 'Handuk' diawali dengan suku kata 'ha'.",
+                options: ["BENAR", "SALAH"],
+                correct: 0, // BENAR
+                explanation: "Benar! Kata Handuk dieja han-duk, diawali dengan bunyi suku kata 'ha'."
+            },
+            {
+                type: "tf",
+                question: "21. [Benar/Salah] Kata 'Hidung' diawali dengan suku kata 'ho'.",
+                options: ["BENAR", "SALAH"],
+                correct: 1, // SALAH
+                explanation: "Salah! Kata 'Hidung' diawali dengan suku kata 'hi'."
+            },
+            {
+                type: "tf",
+                question: "22. [Benar/Salah] Suku kata 'he' terdapat pada kata 'Helicopter'.",
+                options: ["BENAR", "SALAH"],
+                correct: 0, // BENAR
+                explanation: "Benar! Kata Helicopter diawali suku kata 'he'."
+            },
+            {
+                type: "tf",
+                question: "23. [Benar/Salah] Kata 'Hutan' diawali dengan suku kata 'hu'.",
+                options: ["BENAR", "SALAH"],
+                correct: 0, // BENAR
+                explanation: "Benar! Hutan dieja hu-tan, diawali suku kata 'hu'."
+            },
+            {
+                type: "tf",
+                question: "24. [Benar/Salah] Tanda seru (!) digunakan di awal kalimat.",
+                options: ["BENAR", "SALAH"],
+                correct: 1, // SALAH
+                explanation: "Salah! Tanda seru (!) ditempatkan di akhir kalimat."
+            },
+            {
+                type: "tf",
+                question: "25. [Benar/Salah] Kata 'Hobi' diawali dengan suku kata 'ho'.",
+                options: ["BENAR", "SALAH"],
+                correct: 0, // BENAR
+                explanation: "Benar! Kata Hobi dieja ho-bi, diawali suku kata 'ho'."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctAnswersCount = 0;
+        let wrongAnswersCount = 0;
+        let answered = false;
+
+        // DOM Elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const questionBadge = document.getElementById('question-badge');
+        const questionCount = document.getElementById('question-count');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        
+        const explanationBox = document.getElementById('explanation-box');
+        const explanationTitle = document.getElementById('explanation-title');
+        const explanationText = document.getElementById('explanation-text');
+        const explanationIcon = document.getElementById('explanation-icon');
+        const nextBtn = document.getElementById('next-btn');
+
+        function startQuiz() {
+            welcomeScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswersCount = 0;
+            wrongAnswersCount = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            answered = false;
+            explanationBox.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+
+            const currentQ = quizData[currentQuestionIndex];
+            
+            // Update Progress
+            questionCount.innerText = `${currentQuestionIndex + 1} / ${quizData.length}`;
+            const progressPercent = ((currentQuestionIndex + 1) / quizData.length) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+
+            if (currentQ.type === "mcq") {
+                questionBadge.innerText = "Soal Pilihan Ganda";
+                questionBadge.className = "bg-indigo-100 text-indigo-800 text-sm font-bold px-3 py-1 rounded-full border border-indigo-300";
+            } else {
+                questionBadge.innerText = "Soal Benar / Salah";
+                questionBadge.className = "bg-purple-100 text-purple-800 text-sm font-bold px-3 py-1 rounded-full border border-purple-300";
+            }
+
+            questionText.innerText = currentQ.question;
+            optionsContainer.innerHTML = '';
+
+            // Render Options
+            if (currentQ.type === "mcq") {
+                currentQ.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left bg-white hover:bg-yellow-50 border-2 border-gray-200 hover:border-yellow-400 font-bold text-lg p-4 rounded-2xl btn-bounce flex items-center transition-all text-gray-700";
+                    btn.innerText = opt;
+                    btn.onclick = () => selectOption(idx, btn);
+                    optionsContainer.appendChild(btn);
+                });
+            } else {
+                // Benar / Salah layout
+                const gridDiv = document.createElement('div');
+                gridDiv.className = "grid grid-cols-2 gap-4";
+
+                currentQ.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    const isTrue = idx === 0;
+                    btn.className = `w-full text-center font-fredoka text-2xl p-5 rounded-2xl border-b-4 btn-bounce transition-all ${
+                        isTrue 
+                        ? 'bg-emerald-100 text-emerald-800 border-emerald-400 hover:bg-emerald-200' 
+                        : 'bg-rose-100 text-rose-800 border-rose-400 hover:bg-rose-200'
+                    }`;
+                    btn.innerText = opt;
+                    btn.onclick = () => selectOption(idx, btn);
+                    gridDiv.appendChild(btn);
+                });
+                optionsContainer.appendChild(gridDiv);
+            }
+        }
+
+        function triggerGlitter() {
+            // Efek konfeti / glitter warna-warni ramah anak
+            confetti({
+                particleCount: 70,
+                spread: 60,
+                origin: { y: 0.7 },
+                colors: ['#fde047', '#a855f7', '#ec4899', '#3b82f6', '#10b981']
+            });
+        }
+
+        function selectOption(selectedIndex, selectedBtn) {
+            if (answered) return;
+            answered = true;
+
+            const currentQ = quizData[currentQuestionIndex];
+            const allButtons = optionsContainer.querySelectorAll('button');
+
+            // Cek Jawaban
+            if (selectedIndex === currentQ.correct) {
+                // JAWABAN BENAR
+                score += 4; // 25 soal x 4 = 100
+                correctAnswersCount++;
+                selectedBtn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-700');
+                selectedBtn.classList.remove('bg-white', 'hover:bg-yellow-50', 'bg-emerald-100', 'bg-rose-100', 'text-emerald-800', 'text-rose-800');
+                
+                triggerGlitter(); // Efek Glitter / Konfeti
+
+                explanationTitle.innerText = "Hebat! Jawabanmu Benar ✨";
+                explanationTitle.className = "font-bold text-lg text-emerald-800";
+                explanationBox.className = "bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4 mb-6 text-gray-800";
+                explanationIcon.innerText = "🎉";
+            } else {
+                // JAWABAN SALAH
+                wrongAnswersCount++;
+                selectedBtn.classList.add('bg-rose-500', 'text-white', 'border-rose-700');
+                selectedBtn.classList.remove('bg-white', 'hover:bg-yellow-50', 'bg-emerald-100', 'bg-rose-100', 'text-emerald-800', 'text-rose-800');
+
+                // Highlight jawaban yang benar
+                if (currentQ.type === "mcq") {
+                    allButtons[currentQ.correct].classList.add('bg-emerald-200', 'border-emerald-400', 'text-emerald-900');
+                }
+
+                explanationTitle.innerText = "Yuk Pelajari Lagi! 💡";
+                explanationTitle.className = "font-bold text-lg text-rose-800";
+                explanationBox.className = "bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 mb-6 text-gray-800";
+                explanationIcon.innerText = "✏️";
+            }
+
+            // Tampilkan Pembahasan & Tombol Lanjut
+            explanationText.innerText = currentQ.explanation;
+            explanationBox.classList.remove('hidden');
+            nextBtn.classList.remove('hidden');
+
+            // Nonaktifkan semua tombol setelah memilih
+            allButtons.forEach(btn => {
+                btn.style.pointerEvents = 'none';
+            });
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('correct-count').innerText = correctAnswersCount;
+            document.getElementById('wrong-count').innerText = wrongAnswersCount;
+
+            const starsContainer = document.getElementById('stars-container');
+            const resultTitle = document.getElementById('result-title');
+            const resultSubtitle = document.getElementById('result-subtitle');
+            const resultEmoji = document.getElementById('result-emoji');
+
+            // Konfeti besar saat selesai kuis
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.5 }
+            });
+
+            if (score >= 80) {
+                starsContainer.innerText = "⭐⭐⭐";
+                resultEmoji.innerText = "🏆";
+                resultTitle.innerText = "Luar Biasa! Pintar Sekali!";
+                resultSubtitle.innerText = "Kamu sudah sangat paham materi Bahasa Indonesia!";
+            } else if (score >= 60) {
+                starsContainer.innerText = "⭐⭐";
+                resultEmoji.innerText = "🌟";
+                resultTitle.innerText = "Bagus Sekali!";
+                resultSubtitle.innerText = "Hasil yang bagus! Tingkatkan lagi belajarnya ya!";
+            } else {
+                starsContainer.innerText = "⭐";
+                resultEmoji.innerText = "👍";
+                resultTitle.innerText = "Tetap Semangat!";
+                resultSubtitle.innerText = "Jangan menyerah, yuk belajar dan coba lagi!";
+            }
+        }
+
+        function restartQuiz() {
+            resultScreen.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+        }
+    </script>
 </body>
 </html>
+Semoga kuis interaktif ini bermanfaat untuk proses pembelajaran siswa kelas 1 SD! Selamat belajar!
